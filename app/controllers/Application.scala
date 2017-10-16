@@ -74,10 +74,6 @@ class Application extends Controller {
   def list = Action.async { implicit request =>
     val token = getRequestToken(request)
 
-    if (token == null){
-      Unauthorized
-    }
-
     val futurePage: Future[List[Bookmark]] = TimeoutFuture(Bookmark.findAll(token))
     futurePage
       .map(bookmarks => Ok(Json.toJson(bookmarks)))
@@ -86,6 +82,24 @@ class Application extends Controller {
         Logger.error("Problem found in bookmark list process")
         InternalServerError(t.getMessage)
       }
+  }
+
+  /**
+    * list details of single Bookmark
+    */
+  def listItem(id: Long) = Action.async { implicit request =>
+    val token = getRequestToken(request)
+
+    val futurePage: Future[Option[Bookmark]] = TimeoutFuture(Bookmark.findById(id, token))
+    futurePage.map{
+      //redirect, prevent caching so that deleted slugs are not saved in browser
+      case Some(bookmark) => Ok(Json.toJson(bookmark))
+      case None           => NotFound
+    }.recover {
+      case t: TimeoutException =>
+        Logger.error("Problem found in bookmark lookup process")
+        InternalServerError(t.getMessage)
+    }
   }
 
   /**

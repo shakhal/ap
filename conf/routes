@@ -12,8 +12,11 @@ GET    /logout                   controllers.Application.logout
 
 GET    /dashboard                controllers.Application.dashboard
 
-# Bookmarks list (look at the default values for pagination parameters)
+# Bookmarks list
 GET    /bookmarks/               controllers.Application.list
+
+# Single Bookmark
+GET    /bookmarks/:id               controllers.Application.listItem(id:Long)
 
 # Add bookmark
 POST   /bookmarks/               controllers.Application.save

@@ -144,7 +144,7 @@ var BookmarkForm = React.createClass({
 		            <input type="text" name="name" required="required" ref="name" placeholder="Name" className="form-control" />
 		          </div>
 		        </div>
-		        <div className="col-xs-3">
+		        <div className="col-xs-6">
 		          <div className="form-group">
 		            <input type="url" name="url"required="required"  ref="url" placeholder="URL" className="form-control" />
 		          </div>

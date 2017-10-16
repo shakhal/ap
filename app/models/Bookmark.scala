@@ -41,9 +41,19 @@ object Bookmark {
   /**
     * Get Bookmark by id.
     */
-  def findById(id: Long): Option[Bookmark] = {
+  def findById(id: Long, token: String): Option[Bookmark] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from bookmark where id = {id}").on('id -> id).as(bookmark.singleOpt)
+      try {
+        SQL("select * from bookmark where id = {id} and userId = (select userId from token where token={token})")
+          .on(
+            'id -> id,
+            'token -> token
+          ).as(bookmark.singleOpt)
+      }
+      catch {
+        case ex: Exception => Logger.info("ERROR", ex);
+          None
+      }
     }
   }
 
