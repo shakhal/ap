@@ -22,3 +22,4 @@ insert into token (userId,token,createdAt) values (1,'momo', NOW());
 
 delete from bookmark;
 delete from user;
+delete from token;

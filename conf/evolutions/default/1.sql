@@ -2,7 +2,7 @@
 
 # --- !Ups
 
-set ignorecase true;
+-- set ignorecase true;
 
 -- CREATE TABLE employee (
 --   id                        BIGINT NOT NULL AUTO_INCREMENT,
