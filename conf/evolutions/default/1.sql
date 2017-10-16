@@ -2,30 +2,27 @@
 
 # --- !Ups
 
-CREATE SEQUENCE bookmark_seq;
+set ignorecase true;
 
 CREATE TABLE bookmark (
-  id                        BIGINT NOT NULL DEFAULT NEXTVAL ('bookmark_seq'),
+  id                        BIGINT NOT NULL AUTO_INCREMENT,
   name                      VARCHAR(255) NOT NULL,
   url                       VARCHAR(1000) NOT NULL,
   slug                      VARCHAR(255) NOT NULL,
   userId                    BIGINT NOT NULL,
   CONSTRAINT pk_bookmark PRIMARY KEY (id),
-  CONSTRAINT uq_userid_url UNIQUE (userId,url)
-);
+  CONSTRAINT uq_userid_url UNIQUE (userId,url),
+  INDEX (slug),
+  INDEX (url)
+)
+;
 
-CREATE INDEX slug_idx on bookmark(slug);
-CREATE INDEX url_idx on bookmark(url);
-
-CREATE SEQUENCE user_seq;
-
-CREATE TABLE users (
-  userId                    BIGINT NOT NULL DEFAULT NEXTVAL ('user_seq'),
+CREATE TABLE user (
+  userId                    BIGINT NOT NULL AUTO_INCREMENT,
   email                     VARCHAR(255) NOT NULL,
-  CONSTRAINT pk_user PRIMARY KEY (userId)
+  CONSTRAINT pk_user PRIMARY KEY (userId),
+  INDEX (email)
 );
-
-CREATE INDEX email_idx on users(email);
 
 CREATE TABLE token (
   userId                    BIGINT NOT NULL,
@@ -34,9 +31,8 @@ CREATE TABLE token (
   CONSTRAINT pk_token PRIMARY KEY (token)
 )
 ;
-
 # --- !Downs
 
 drop table if exists bookmark;
-drop table if exists users;
+drop table if exists user;
 drop table if exists token;

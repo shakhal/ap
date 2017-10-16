@@ -39,13 +39,13 @@ object User {
     */
   def findByEmail(email: String): Option[User] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from users where email = {email}").on('email -> email).as(user.singleOpt)
+      SQL("select * from user where email = {email}").on('email -> email).as(user.singleOpt)
     }
   }
 
   def getTokenByEmail(email: String): Option[Token] = {
     DB.withConnection { implicit connection =>
-      SQL("select t.* from users u join token t on(u.email = {email} AND u.userId = t.userId)").on('email -> email).as(token.singleOpt)
+      SQL("select t.* from user u join token t on(u.email = {email} AND u.userId = t.userId)").on('email -> email).as(token.singleOpt)
     }
   }
 
@@ -57,7 +57,7 @@ object User {
   def findAll: List[User] = {
     DB.withConnection { implicit connection =>
       try {
-        SQL("select * from users").as(user *)
+        SQL("select * from user").as(user *)
       } catch {
         case ex: Exception => Logger.info("ERROR", ex); Nil
       }
