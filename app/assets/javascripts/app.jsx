@@ -24,7 +24,7 @@ var BookmarkDetail = React.createClass({
 
         var formData = $("#bookmarkForm").serialize();
 
-        var saveUrl = "http://localhost:9000/bookmarks/";
+        var saveUrl = "/bookmarks/";
         $.ajax({
             url: saveUrl,
             method: 'POST',
@@ -126,4 +126,4 @@ var BookmarkForm = React.createClass({
   }
 });
 
-React.render(<BookmarkDetail url="http://localhost:9000/bookmarks/" />, document.getElementById('content'));
+React.render(<BookmarkDetail url="/bookmarks/" />, document.getElementById('content'));
