@@ -11,8 +11,8 @@ insert into bookmark (id,name,url,slug,userId) values (5,'YNET', 'http://www.yne
 insert into bookmark (id,name,url,slug,userId) values (6,'NRG', 'http://www.nrg.co.il','PvGseE', 1);
 
 
-insert into user (userId,email) values (0,'shakhalevinson@gmail.com');
-insert into user (userId,email) values (1,'ohad@appthis.com');
+insert into users (userId,email) values (0,'shakhalevinson@gmail.com');
+insert into users (userId,email) values (1,'ohad@appthis.com');
 
 insert into token (userId,token,createdAt) values (0,'koko', NOW());
 insert into token (userId,token,createdAt) values (1,'momo', NOW());
