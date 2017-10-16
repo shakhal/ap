@@ -15,7 +15,8 @@ libraryDependencies ++= Seq(
   	"org.webjars"       %  "flat-ui"            % "bcaf2de95e",
   	"org.webjars" 		%  "react" 				% "0.13.3",
   	"org.webjars" 		%  "marked" 			% "0.3.2",
-		"commons-validator" % "commons-validator" % "1.4.0"
+		"commons-validator" % "commons-validator" % "1.4.0",
+ 	  "postgresql" % "postgresql" % "9.1-901.jdbc4"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
