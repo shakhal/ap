@@ -14,8 +14,8 @@ CREATE TABLE bookmark (
   CONSTRAINT uq_userid_url UNIQUE (userId,url)
 );
 
-CREATE INDEX on slug_idx bookmark(slug);
-CREATE INDEX on url_idx bookmark(url);
+CREATE INDEX slug_idx on bookmark(slug);
+CREATE INDEX url_idx on bookmark(url);
 
 CREATE SEQUENCE user_seq;
 
