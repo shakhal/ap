@@ -11,11 +11,13 @@ insert into bookmark (id,name,url,slug,userId) values (5,'YNET', 'http://www.yne
 insert into bookmark (id,name,url,slug,userId) values (6,'NRG', 'http://www.nrg.co.il','PvGseE', 1);
 
 
-insert into user (userId,email) values (0,'shakhalevinson@gmail.com');
-insert into user (userId,email) values (1,'ohad@appthis.com');
+insert into user (userId,email) values (0,'test1@appthis.com');
+insert into user (userId,email) values (1,'test2@appthis.com');
+insert into user (userId,email) values (2,'test3@appthis.com');
 
-insert into token (userId,token,createdAt) values (0,'koko', NOW());
-insert into token (userId,token,createdAt) values (1,'momo', NOW());
+insert into token (userId,token,createdAt) values (0,'KvDEqBDZ4faGJiasN4Bpz6HtD0B1Za6pkcJ5BwJFNjLFNRpAtY', NOW());
+insert into token (userId,token,createdAt) values (1,'T1Gm2pd8dO0H3zqj96ipjt3R88OU0JjF3evMxWIJZGLzaAh0Zv', NOW());
+insert into token (userId,token,createdAt) values (2,'WVEq0gZtZsye8wtCGKWCPR2AnDyqWD6KiuooBpXQdMPg1aehvD', NOW());
 
 
 # --- !Downs

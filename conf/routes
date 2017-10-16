@@ -21,8 +21,10 @@ POST   /bookmarks/               controllers.Application.save
 # Add bookmark
 DELETE /bookmarks/:id            controllers.Application.delete(id:Long)
 
+GET    /me                       controllers.Application.myKey
+
 # Redirect
-GET    /:slug                   controllers.Application.redirect(slug:String)
+GET    /:slug                    controllers.Application.redirect(slug:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)

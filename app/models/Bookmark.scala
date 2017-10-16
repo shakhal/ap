@@ -1,12 +1,12 @@
 package models
 
-import play.api.db._
-import play.api.Play.current
-import anorm._
 import anorm.SqlParser._
+import anorm._
+import play.api.Logger
+import play.api.Play.current
+import play.api.db._
 
 import scala.language.postfixOps
-import play.api.Logger
 
 case class Bookmark(id: Long, name: String, url: String, slug: String)
 
@@ -37,8 +37,9 @@ object Bookmark {
 
   // -- Queries
   Bookmark
+
   /**
-    * Retrieve a employee from the id.
+    * Get Bookmark by id.
     */
   def findById(id: Long): Option[Bookmark] = {
     DB.withConnection { implicit connection =>
@@ -46,60 +47,26 @@ object Bookmark {
     }
   }
 
+  /**
+    * Get Bookmark by slug
+    */
   def findBySlug(slug: String): Option[Bookmark] = {
     DB.withConnection { implicit connection =>
       SQL("select * from bookmark where slug = {slug}").on('slug -> slug).as(bookmark.singleOpt)
     }
   }
 
+  /**
+    * Get Bookmark by URL
+    */
   def findByUrl(url: String): Option[Bookmark] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from bookmark where url = {url}").on('url-> url).as(bookmark.singleOpt)
+      SQL("select * from bookmark where url = {url} limit 1").on('url-> url).as(bookmark.singleOpt)
     }
   }
-//  /**
-//    * Return a page of (Bookmarks).
-//    *
-//    * @param page Page to display
-//    * @param pageSize Number of employees per page
-//    * @param orderBy Employee property used for sorting
-//    * @param filter Filter applied on the name column
-//    */
-//  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[Bookmark] = {
-//
-//    val offest = pageSize * page
-//
-//    DB.withConnection { implicit connection =>
-//
-//      val bookmarks = SQL(
-//        """
-//          select * from bookmark
-//          where bookmark.name like {filter}
-//          order by {orderBy} nulls last
-//          limit {pageSize} offset {offset}
-//        """).on(
-//        'pageSize -> pageSize,
-//        'offset -> offest,
-//        'filter -> filter,
-//        'orderBy -> orderBy).as(bookmark *)
-//
-//      val totalRows = SQL(
-//        """
-//          select count(*) from bookmark
-//          where bookmark.name like {filter}
-//        """).on(
-//        'filter -> filter).as(scalar[Long].single)
-//
-//      Page(bookmarks, page, offest, totalRows)
-//
-//    }
-//
-//  }
 
   /**
-    * Retrieve all Bookmarks by token
-    *
-    * @return
+    * Retrieve all Bookmarks by user token
     */
   def findAll(token: String): List[Bookmark] = {
     DB.withConnection { implicit connection =>
@@ -108,7 +75,8 @@ object Bookmark {
           .on('token -> token)
           .as(bookmark *)
       } catch {
-        case ex: Exception => Logger.info("ERROR", ex); Nil
+        case ex: Exception => Logger.info("ERROR", ex);
+          Nil
       }
     }
   }
@@ -134,21 +102,13 @@ object Bookmark {
     }
   }
 
-  override def toString = super.toString
-
-  val tokenp = {
-    get[Long]("token.userId") ~
-      get[String]("token.token")  map {
-      case id ~ token => Token(id, token)
-    }
-  }
-
   /**
     * Insert a new bookmark.
     *
     */
   def insert(bookmark: Bookmark, slug: String, token: String): Option[Long] = {
     DB.withConnection { implicit connection =>
+      try {
         SQL(
           """
           insert into bookmark values (
@@ -159,8 +119,13 @@ object Bookmark {
           'name -> bookmark.name,
           'url -> bookmark.url,
           'slug -> slug,
-          'userId -> SQL("select * from token t where t.token = {token}").on('token -> token).as(tokenp.single).id
+          'userId -> SQL("select * from token t where t.token = {token}").on('token -> token).as(User.token.single).userId
         ).executeInsert()
+      }
+      catch {
+        case e: Exception => println("exception caught: " + e);
+        None
+      }
     }
   }
 
@@ -169,9 +134,14 @@ object Bookmark {
     *
     * @param id Id of the employee to delete.
     */
-  def delete(id: Long): Int = {
-    DB.withConnection { implicit connection =>
-      SQL("delete from bookmark where id = {id}").on('id -> id).executeUpdate()
+    def delete(id: Long, token: String ): Int = {
+      DB.withConnection { implicit connection =>
+        SQL("delete from bookmark where id={id} and userId = (select userId from token where token={token})")
+          .on(
+            'id -> id,
+            'token -> token
+          )
+          .executeUpdate()
     }
   }
 

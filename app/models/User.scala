@@ -1,5 +1,8 @@
 package models
 
+import java.util.Date
+import java.util.Calendar
+
 import play.api.db._
 import play.api.Play.current
 import anorm._
@@ -9,7 +12,7 @@ import scala.language.postfixOps
 import play.api.Logger
 
 case class User(id: Long, email: String)
-case class Token(id: Long, token: String)
+case class Token(token: String, userId: Long, createdAt: Date)
 
 
 object User {
@@ -27,15 +30,16 @@ object User {
   }
 
   val token = {
-    get[Long]("token.userId") ~
-      get[String]("token.token")  map {
-      case id ~ token => Token(id, token)
+      get[String]("token.token") ~
+      get[Long]("token.userId") ~
+      date("token.createdAt") map {
+      case token ~ userId ~ createdAt => Token(token, userId, createdAt)
     }
   }
   // -- Queries
   User
   /**
-    * Retrieve a employee from the id.
+    * Retrieve a emplofyee from the id.
     */
   def findByEmail(email: String): Option[User] = {
     DB.withConnection { implicit connection =>
@@ -45,7 +49,8 @@ object User {
 
   def getTokenByEmail(email: String): Option[Token] = {
     DB.withConnection { implicit connection =>
-      SQL("select t.* from user u join token t on(u.email = {email} AND u.userId = t.userId)").on('email -> email).as(token.singleOpt)
+        SQL("select t.* from user u join token t on(u.email = {email} AND u.userId = t.userId)").on('email -> email)
+          .as(token.singleOpt)
     }
   }
 
@@ -64,8 +69,6 @@ object User {
     }
   }
 
-  override def toString = super.toString
-
   /**
     * Insert a new user.
     *
@@ -81,6 +84,20 @@ object User {
         """).on(
           'userId -> Option.empty[Long],
           'email -> user.email).executeInsert()
+    }
+  }
+
+  def saveToken(userId: Long, token: String): Option[Long] = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          insert into token values (
+    		  {userId}, {token}, {createdAt}
+          )
+        """).on(
+        'userId -> userId,
+        'token -> token,
+        'createdAt -> Calendar.getInstance().getTime()).executeInsert()
     }
   }
 

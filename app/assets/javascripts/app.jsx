@@ -17,7 +17,6 @@ var BookmarkDetail = React.createClass({
   },
   componentDidMount: function() {
     this.loadBookmarks();
-    // setInterval(this.loadBookmarks, this.props.pollInterval);
   },
   handleSubmit: function(e) {
         e.preventDefault();
@@ -45,6 +44,34 @@ var BookmarkDetail = React.createClass({
 
         return;
   },
+  delete: function(e) {
+        e.preventDefault();
+
+        var formData = $("#bookmarkForm").serialize();
+        var idToDelete = e.target.dataset.id;
+
+        var deleteUrl = "/bookmarks/" + idToDelete;
+        $.ajax({
+            url: deleteUrl,
+            method: 'DELETE',
+            dataType: 'json',
+            data: formData,
+            cache: false,
+            success: function(data) {
+                var tempBookmarks = this.state.data.slice();
+                var removeIndex = tempBookmarks.findIndex(function(e){return e.id==idToDelete})
+                tempBookmarks.splice(removeIndex, 1);
+                this.setState({ data: tempBookmarks});
+                $("#bookmarkForm")[0].reset();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                $("#bookmarkForm")[0].reset();
+                alert(err.toString());
+            }.bind(this)
+        });
+
+        return;
+  },
   render: function() {
     return (
       <div className="">
@@ -53,10 +80,13 @@ var BookmarkDetail = React.createClass({
           <a href="/logout" style={{float:'right'}}>
             <button>logout</button>
           </a>
+          <a style={{float:'right', 'padding-right':'20px'}}>
+            <button onClick={function(){$.get('/me').success(function(data){alert(data.key)})}} >show my key</button>
+          </a>
         </div>
         <div>
           <BookmarkForm handleSubmit={this.handleSubmit} />
-          <Bookmarks data={this.state.data} />
+          <Bookmarks delete={this.delete} data={this.state.data} />
         </div>
       </div>
     );
@@ -65,9 +95,10 @@ var BookmarkDetail = React.createClass({
 
 var Bookmarks = React.createClass({
   render: function() {
+      var self = this;
       var bookmarkNodes = this.props.data.map(function (bookmark) {
           return (
-              <Bookmark key={bookmark.id} name={bookmark.name} url={bookmark.url} slug={bookmark.slug} />
+              <Bookmark key={bookmark.id} id={bookmark.id} name={bookmark.name} url={bookmark.url} slug={bookmark.slug} delete={self.props.delete}/>
           );
       });
       return (
@@ -97,6 +128,7 @@ var Bookmark = React.createClass({
           <td>{this.props.name}</td>
           <td><a href={this.props.url}>{this.props.url}</a></td>
           <td><a href={"/"+this.props.slug}>{this.props.slug}</a></td>
+          <td data-id={this.props.id} onClick={this.props.delete} style={{'cursor':'pointer'}}>x</td>
         </tr>
     );
   }

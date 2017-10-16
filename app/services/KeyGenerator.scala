@@ -7,9 +7,15 @@ object KeyGenerator {
   val alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   val size = alpha.size
   val slugLength = 6;
+  val sessionKeyLength = 50;
 
   def randStr(n:Int) : String = {
     (1 to n).map(x => alpha(Random.nextInt.abs % size)).mkString
+  }
+
+  //assumes to be unique
+  def generateSessionKey(): String = {
+    return randStr(sessionKeyLength);
   }
 
   def generateSlug(url: String) : String = {
